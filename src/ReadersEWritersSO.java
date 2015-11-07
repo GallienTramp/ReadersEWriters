@@ -8,17 +8,20 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.Semaphore;
 
 
 public class ReadersEWritersSO {
     
-    static List<String> txt; //Texto do arquivo
+    public static List<String> txt; //Texto do arquivo
     static ArrayList<Integer> roulette; //Posicoes em que serao inseridos os objetos
     static Thread[] rw; // vetor de threads
-    
+    static Semaphore mutex;
     public static void main(String[] args) {
         loadText();
-        for(int i = 0; i < rw.length; i++)
+        mutex = new Semaphore(1);
+        
+        for(int i = 0; i < 100; i++)
         {
             long media=0;
             int test = 50;//50 testes para cada i
@@ -29,7 +32,8 @@ public class ReadersEWritersSO {
                 for(Thread t : rw)//Inicia a execucao das threads
                     t.start();
                 try {
-                    rw[rw.length-1].join();//Espera a ultima terminar para continuar o codigo
+                    for(Thread t : rw)
+                        t.join();//Espera todas terminarem para continuar o codigo
                 } catch (InterruptedException ex) {
                     System.out.println("Erro na thread");
                 }
@@ -37,7 +41,7 @@ public class ReadersEWritersSO {
                 media+=(System.currentTimeMillis() - inicialTime);//o tempo gasto eh somado
             }
             //Imprime o tempo medio dos 50 testes para i leitores e 100-i escritores
-            System.out.println(i + " leitores e " + (100-i) + " escritores. Tempo medio: " + media/50 + "ms");
+            System.out.println(i + " leitores e " + (100-i) + " escritores. Tempo medio: " + (long)media/50 + "ms");
             
         }
     }
@@ -72,9 +76,11 @@ public class ReadersEWritersSO {
             
             while(sc.hasNext())
                 txt.add(sc.nextLine());
+            sc.close();
         } catch (FileNotFoundException ex) {
             System.out.println("O arquivo não foi encontrado.");
-        }       
+        }
+        
     }
     
 }
