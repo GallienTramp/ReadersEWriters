@@ -7,7 +7,8 @@ public class Reader implements Runnable{
     public void run() 
     {
         try {
-            ReadersEWritersSO.lock.lock();
+            ReadersEWritersSO.readWriteLock.readLock().lock();//implementacao 1
+            //ReadersEWritersSO.lock.lock();//implementacao2
             for(int i = 0; i < 100; i++) {
                 int p = r.nextInt(ReadersEWritersSO.txt.size());
                 lastWord = ReadersEWritersSO.txt.get(p);
@@ -17,8 +18,8 @@ public class Reader implements Runnable{
                 //Logger.getLogger(Reader.class.getName()).log(Level.SEVERE, null, ex);
         }
         finally{
-            //ReadersEWritersSO.mutex.release();
-            ReadersEWritersSO.lock.unlock(); 
+            ReadersEWritersSO.readWriteLock.readLock().unlock();//implementacao1
+            //ReadersEWritersSO.lock.unlock();//implementacao 2
         }
     }
 }

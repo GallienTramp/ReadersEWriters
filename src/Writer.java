@@ -7,7 +7,8 @@ public class Writer implements Runnable {
     @Override
     public void run() {
         try {
-            ReadersEWritersSO.lock.lock();
+            ReadersEWritersSO.readWriteLock.writeLock().lock();//implementacao1
+            //ReadersEWritersSO.lock.lock();//Implementacao 2
             for(int i = 0; i < 100; i++)
             {
                 int p = r.nextInt(ReadersEWritersSO.txt.size());
@@ -15,12 +16,12 @@ public class Writer implements Runnable {
             }
                 Thread.sleep(1);
         } catch (InterruptedException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
         finally
         {
-            //ReadersEWritersSO.mutex.release();
-            ReadersEWritersSO.lock.unlock();
+            ReadersEWritersSO.readWriteLock.writeLock().unlock();
+            //ReadersEWritersSO.lock.unlock();//implementacao2
         }
     }
     

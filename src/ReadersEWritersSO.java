@@ -9,7 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 public class ReadersEWritersSO {
@@ -18,25 +20,29 @@ public class ReadersEWritersSO {
     static ArrayList<Integer> roulette; //Posicoes em que serao inseridos os objetos
     static Thread[] rw; // vetor de threads
     
-    //Para Implementacao 2
-    static Lock lock = new ReentrantLock();//http://tutorials.jenkov.com/java-util-concurrent/lock.html
-    
     //Para Implementacao 1
     //http://tutorials.jenkov.com/java-util-concurrent/readwritelock.html
+    static ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    
+    //Para Implementacao 2
+    //http://tutorials.jenkov.com/java-util-concurrent/lock.html
+    //static Lock lock = new ReentrantLock();
+    
+    
     public static void main(String[] args) {
         loadText();
-        for(int i = 0; i < 100; i++){
+        for(int i = 0; i <= 100; i++){
             long tempoGastoTotal=0;
             int test = 50;//50 testes para cada i
             while(test>0){
                 readersWritersBirth(i);//Popula o vetor de threads numa ordem aleatoria  
                 long inicialTime = System.currentTimeMillis();//recebe o tempo inicial
-                readersWritersExecute();
+                readersWritersExecute();//Inicia as threads
                 tempoGastoTotal+=(System.currentTimeMillis() - inicialTime);//o tempo gasto eh somado
                 test--;//Contador     
             }
             //Imprime o tempo medio dos 50 testes para i leitores e 100-i escritores
-            System.out.println(i + " leitores e " + (100-i) + " escritores. Tempo medio: " + (long)tempoGastoTotal/50 + "ms"); 
+            System.out.println((100-i) + " leitores e " + i + " escritores\t" + (long)tempoGastoTotal/50 + "ms"); 
         }
     }
     
@@ -67,9 +73,9 @@ public class ReadersEWritersSO {
         bingo();
         Iterator r = roulette.iterator();
         for(int i =0; i < qt; i++)
-           rw[(int)r.next()] = new Thread(new Reader());
+           rw[(int)r.next()] = new Thread(new Writer());
         for(int i = qt; i < rw.length; i++)
-           rw[(int)r.next()] = new Thread(new Writer());     
+           rw[(int)r.next()] = new Thread(new Reader());     
     }
     
     public static void readersWritersExecute()
