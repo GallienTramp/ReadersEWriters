@@ -7,7 +7,7 @@ public class Writer implements Runnable {
     @Override
     public void run() {
         try {
-            ReadersEWritersSO.mutex.acquire();
+            ReadersEWritersSO.lock.lock();
             for(int i = 0; i < 100; i++)
             {
                 int p = r.nextInt(ReadersEWritersSO.txt.size());
@@ -19,7 +19,8 @@ public class Writer implements Runnable {
         }
         finally
         {
-            ReadersEWritersSO.mutex.release();
+            //ReadersEWritersSO.mutex.release();
+            ReadersEWritersSO.lock.unlock();
         }
     }
     
